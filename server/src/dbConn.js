@@ -1,9 +1,25 @@
-const mongoose = require('mongoose');
-const DB_URL = 'mongodb://localhost:27017/';
-const DB = 'licenseAPI';
-/* DB Connection */
-mongoose.connect(DB_URL + DB, {useUnifiedTopology: true, useNewUrlParser: true})
-  .then(client => console.log('DB is connected'))
-  .catch(err => console.error(err));
+import mongoose from 'mongoose'
 
-export default mongoose;
+export default function() {
+  const connectionUrl = `mongodb://${process.env.DB_HOST}/${process.env.DB_NAME}`
+
+  mongoose.connect(connectionUrl, {
+    ...(process.env.NODE_ENV === "production" && {
+      authSource: "admin", //
+      pass: process.env.DB_PASS,
+      user: process.env.DB_USER
+    }),
+    useNewUrlParser: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+  });
+
+  mongoose.connection.on("connected", () => {
+    console.log('DB is connected')
+  });
+
+  mongoose.connection.on("error", error => {
+    console.log("Mongoose default connection error:", error);
+  });
+}

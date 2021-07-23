@@ -1,41 +1,21 @@
-'use strict';
+//import fs from 'fs'
+//import https from 'https'
 
-// Modules 
-import './dbConn';
-import path from 'path';
-import morgan from 'morgan';
-import express from 'express';
-//const passport = require('passport');
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-/* 
-################# 
-####  INIT   ####    
-################# */
-const app = express();
+import initMongoose from "./dbConn";
+import app from './app'
 
-// Settings 
-const PORT = 3000;
-app.set('port', process.env.PORT || PORT);
-app.use(express.urlencoded({ extended: true }));
+(async () => {
+    // Initialize Mongoose
+    initMongoose();
 
-// Middlewares 
-app.use(morgan('dev'));
-app.use(express.json());
-//app.use(passport.session());
-//app.use(passport.initialize());
+    const port = process.env.PORT;
+    const modo = process.env.NODE_ENV;
 
-// Routes 
-//app.use('/google', require('./routes/google.routes'));
-// app.use('/license', require('./routes/license.routes'));
-
-// Static Files 
-app.use(express.static(path.join(__dirname,'public')));
-
-// Instance to run the server
-app.listen(app.get('port'), () => {
-   console.log(`Server on port ${app.get('port')}`);
-});
-
-module.exports = app;
-
-// app.use(express.urlencoded({extended:false}));
+        app.listen({ port }, () =>
+            console.log('Server listen http on port', port)
+        );
+    
+})();
