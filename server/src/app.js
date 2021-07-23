@@ -1,14 +1,16 @@
-import express from 'express'
 import cors from 'cors'
 import morgan from 'morgan'
+import express from 'express'
 import pkg from '../package.json'
 
-//import aspirantesRoutes from './routes/aspirantes.routes'
-//import nacademicoRoutes from './routes/nacademico.routes'
-//import agendaRoutes from './routes/agenda.routes'
+import { createRoles } from './libs/initialSetup'
 
+import payments from './routes/payments.routes';
+import auth from './routes/auth.routes'
+import holders from './routes/holder.routes'
 
 const app = express()
+createRoles();
 
 app.use(cors()) 
 app.use(morgan('dev'))
@@ -24,8 +26,8 @@ app.get('/', (req, res) => {
     })
 })
 
-//app.use('/api/aspirantes', aspirantesRoutes)
-//app.use('/api/nacademico', nacademicoRoutes)
-//app.use('/api/agenda', agendaRoutes)
+app.use('/api/payments', payments);
+app.use('/api/auth', auth);
+app.use('/api/holders', holders);
 
 export default app;

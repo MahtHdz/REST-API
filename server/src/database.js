@@ -20,6 +20,6 @@ export default function() {
   });
 
   mongoose.connection.on("error", error => {
-    console.log("Mongoose default connection error:", error);
+    console.error("Mongoose default connection error:", error);
   });
 }

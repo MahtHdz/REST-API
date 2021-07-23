@@ -4,7 +4,7 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-import initMongoose from "./dbConn";
+import initMongoose from "./database";
 import app from './app'
 
 (async () => {
