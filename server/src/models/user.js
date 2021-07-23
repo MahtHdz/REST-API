@@ -12,6 +12,11 @@ const userSchema = new Schema({
         type: String, 
         required: true
     },
+    bankAccount: {
+        ref:'bankAccount',
+        type: Schema.Types.ObjectId,
+        required: true
+    },
     role:{
             ref:'role',
             type: Schema.Types.ObjectId

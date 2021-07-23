@@ -5,9 +5,10 @@ import pkg from '../package.json'
 
 import { createRoles } from './libs/initialSetup'
 
-import payments from './routes/payments.routes';
+import transactions from './routes/transactions.routes';
+import holdersUpdate from './routes/updateAndDelete.routes'
+import history from './routes/history.routes'
 import auth from './routes/auth.routes'
-import holders from './routes/holder.routes'
 
 const app = express()
 createRoles();
@@ -26,8 +27,9 @@ app.get('/', (req, res) => {
     })
 })
 
-app.use('/api/payments', payments);
+app.use('/api/UD', holdersUpdate);
+app.use('/api/transactions', transactions);
+app.use('/api/history', history);
 app.use('/api/auth', auth);
-app.use('/api/holders', holders);
 
 export default app;
