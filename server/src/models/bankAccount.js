@@ -1,14 +1,13 @@
 'use strict'
 import {Schema, model} from 'mongoose';
 const userSchema = new Schema({
-    //name:{type: String, required: true},
     bankAccount:{
         type: Number, 
         unique: true, 
         required: true
     },
     balance:{
-        type: String, 
+        type: Number, 
         required: true
     },
 },

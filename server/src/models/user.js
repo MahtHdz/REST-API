@@ -1,8 +1,8 @@
 'use strict'
+import mongooseAutoPopulate from 'mongoose-autopopulate';
 import {Schema, model} from 'mongoose';
 import bcrypt from 'bcryptjs'
 const userSchema = new Schema({
-    //name:{type: String, required: true},
     email:{
         type: String, 
         unique: true, 
@@ -15,12 +15,15 @@ const userSchema = new Schema({
     bankAccount: {
         ref:'bankAccount',
         type: Schema.Types.ObjectId,
-        required: true
+        required: true,
+        autopopulate: true
     },
     role:{
-            ref:'role',
-            type: Schema.Types.ObjectId
-        }
+        ref:'role',
+        type: Schema.Types.ObjectId,
+        required: true,
+        autopopulate: true
+    }
 },
 {
    timestamps: true,
@@ -36,4 +39,5 @@ userSchema.statics.comparePassword = async (password, receivedPassword) => {
     return await bcrypt.compare(password, receivedPassword);
 }
 
+userSchema.plugin(mongooseAutoPopulate);
 export default model('users', userSchema);

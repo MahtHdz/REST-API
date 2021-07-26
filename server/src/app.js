@@ -4,10 +4,8 @@ import express from 'express'
 import pkg from '../package.json'
 
 import { createRoles } from './libs/initialSetup'
-
 import transactions from './routes/transactions.routes';
 import holdersUpdate from './routes/updateAndDelete.routes'
-import history from './routes/history.routes'
 import auth from './routes/auth.routes'
 
 const app = express()
@@ -29,7 +27,6 @@ app.get('/', (req, res) => {
 
 app.use('/api/UD', holdersUpdate);
 app.use('/api/transactions', transactions);
-app.use('/api/history', history);
 app.use('/api/auth', auth);
 
 export default app;
