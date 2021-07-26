@@ -4,8 +4,15 @@ import * as Transfer from '../models/transfer';
 import BankAccount from '../models/bankAccount';
 
 export const showHoldersTransactions = async (req, res) => {
-    const usersFounded = await User.find();
-    res.json(usersFounded);
+    const roleFounded = await Role.findOne({name: 'holder'});
+    const usersFounded = await User.find({role: roleFounded._id});
+    //let holdersOperations = []
+    usersFounded.forEach(u => {
+        
+    });
+    const holdersOperations = await Transfer.operationModel.find();
+    
+    //res.json(usersFounded);
     //et holderOperations = [];
     //holderOperations.push() ()
 

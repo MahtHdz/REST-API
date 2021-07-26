@@ -21,10 +21,10 @@ export const signin = async (req, res) => {
 }
 
 export const signup = async (req, res) => {
-    const {email, role, password, bankAccount} = req.body;
+    const {email, password, bankAccount, role} = req.body;
 
     const assignedRole = role ?
-        await Role.find({name: role}):
+        await Role.findOne({name: role}):
         await Role.findOne({name: "holder"});
 
 
