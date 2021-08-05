@@ -1,20 +1,6 @@
-import User from '../models/user';
-import Role from '../models/role';
-import * as Transfer from '../models/transfer';
-import BankAccount from '../models/bankAccount';
+import pool from "../database";
 
 export const showHoldersTransactions = async (req, res) => {
-    const roleFounded = await Role.findOne({name: 'holder'});
-    const usersFounded = await User.find({role: roleFounded._id});
-    //let holdersOperations = []
-    usersFounded.forEach(u => {
-        
-    });
-    const holdersOperations = await Transfer.operationModel.find();
-    
-    //res.json(usersFounded);
-    //et holderOperations = [];
-    //holderOperations.push() ()
 
 }
 
@@ -25,36 +11,43 @@ export const showAdminDeposits = async (req, res) => {
 export const transferToAccount = async (req, res) => {
     const {amount, originAccount, destinationAccount} = req.body;
 
-    await BankAccount.findOne({bankAccount: originAccount}) ?
-        {} : res.json("Origin account doesn't exist.");
-    await BankAccount.findOne({bankAccount: destinationAccount}) ?
-        {} : res.json("Destination account doesn't exist.");
+    const originAccountQuery = await pool.query('SELECT * FROM public.bank_account WHERE account_number = $1', [originAccount]).rowCount === 0 ?
+        res.json("Origin account doesn't exist.") : {};
+    const destinationAccountQuery = await pool.query('SELECT * FROM public.bank_account WHERE account_number = $1', [destinationAccount]).rowCount === 0 ?
+        res.json("Destination account doesn't exist.") : {};
 
-    const originAccountFounded = await BankAccount.findOne({bankAccount: originAccount});
-    const destinationAccountFounded = await BankAccount.findOne({bankAccount: destinationAccount});
-    Number(originAccountFounded.balance) >= Number(amount) ?
+    originAccountQuery.rows[0].balance >= amount ?
     {} : res.json("Insufficient funds.");
     
-    const finalBalance = Number(destinationAccountFounded.balance) + Number(amount);
-    const transferMadeIt = await destinationAccountFounded.updateOne({balance: finalBalance});
-    const record = new Transfer.operationModel({amount, operationType: Transfer.Operations.Transfer, originAccount, destinationAccount});
-    const savedRecord = await record.save();
-    console.log(savedRecord);
+    const finalOriginAccountBalance = originAccountQuery.rows[0].balance - amount; 
+    const finalDestinationAccountBalance = destinationAccountQuery.rows[0].balance + amount;
+
+    const updatedOriginAccount = await pool.query('UPDATE public.bank_account SET balance = $2 WHERE account_number = $1', [originAccountQuery.rows[0].account_number, finalOriginAccountBalance]);
+    if (UpdatedUser.rowCount === 0) return res.status(401).json({message: "Something goes wrong"});
+    
+    const updatedDestinationAccount = await pool.query('UPDATE public.bank_account SET balance = $2 WHERE account_number = $1', [destinationAccountQuery.rows[0].account_number, finalDestinationAccountBalance]);
+    if (UpdatedUser.rowCount === 0) return res.status(401).json({message: "Something goes wrong"});
+    
+    const record = await pool.query("INSERT INTO public.transfer_history(amount, transfer_type, origin_account, destination_account) VALUES($1, $2, $3)", [amount, "transfer", originAccount, destinationAccount]);
+    if (record.rowCount === 0) return res.status(401).json({message: "Something goes wrong"});
+    console.log(record.rows);
     res.json({'transfer': 'OK'});
 }
 
 export const depositToAccount = async (req, res) => {
     const {amount, destinationAccount} = req.body;
 
-    await BankAccount.findOne({bankAccount: destinationAccount}) ?
-        {} : res.json("Destination account doesn't exist.");
+    const destinationAccountQuery = await pool.query('SELECT * FROM public.bank_account WHERE account_number = $1', [destinationAccount]).rowCount === 0 ?
+        res.json("Destination account doesn't exist.") : {};
 
-    const destinationAccountFounded = await BankAccount.findOne({bankAccount: destinationAccount});
+
+    const finalDestinationAccountBalance = parseFloat(destinationAccountQuery.rows[0].balance) + parseFloat(amount);
     
-    const finalBalance = Number(destinationAccountFounded.balance) + Number(amount);
-    const transferMadeIt = await destinationAccountFounded.updateOne({balance: finalBalance});
-    const record = new Transfer.operationModel({amount, operationType: Transfer.Operations.Deposit, destinationAccount});
-    const savedRecord = await record.save();
-    console.log(savedRecord);
+    const updatedDestinationAccount = await pool.query('UPDATE public.bank_account SET balance = $2 WHERE account_number = $1', [destinationAccountQuery.rows[0].account_number, finalDestinationAccountBalance]);
+    if (UpdatedUser.rowCount === 0) return res.status(401).json({message: "Something goes wrong"});
+
+    const record = await pool.query("INSERT INTO public.transfer_history(amount, transfer_type, destination_account) VALUES($1, $2, $3)", [amount, "deposit", destinationAccount]);
+    if (record.rowCount === 0) return res.status(401).json({message: "Something goes wrong"});
+    console.log(record.rows);
     res.json({'deposit': 'OK'});
 }

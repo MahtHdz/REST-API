@@ -4,12 +4,12 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-import initMongoose from "./database";
+//import initMongoose from "./database";
 import app from './app'
 
 (async () => {
     // Initialize Mongoose
-    initMongoose();
+    //initMongoose();
 
     const port = process.env.PORT;
     const modo = process.env.NODE_ENV;

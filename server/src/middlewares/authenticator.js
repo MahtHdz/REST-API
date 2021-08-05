@@ -1,6 +1,6 @@
-import config from "../config";
-import Role from "../models/role";
-import User from "../models/user";
+import config from '../config';
+import Role from '../models/Role';
+import User from '../models/User';
 
 export const verifyToken = async (req, res, next) => {
     try {

@@ -3,13 +3,14 @@ import morgan from 'morgan'
 import express from 'express'
 import pkg from '../package.json'
 
-import { createRoles } from './libs/initialSetup'
+//import { createRoles } from './libs/initialSetup'
 import transactions from './routes/transactions.routes';
 import holdersUpdate from './routes/updateAndDelete.routes'
 import auth from './routes/auth.routes'
+import users from './routes/users.routes';
 
 const app = express()
-createRoles();
+//createRoles();
 
 app.use(cors()) 
 app.use(morgan('dev'))
@@ -28,5 +29,6 @@ app.get('/', (req, res) => {
 app.use('/api/UD', holdersUpdate);
 app.use('/api/transactions', transactions);
 app.use('/api/auth', auth);
+app.use('/api/users', users);
 
 export default app;
