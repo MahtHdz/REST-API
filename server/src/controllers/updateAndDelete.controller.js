@@ -1,4 +1,4 @@
-import pool from "../database";
+import pool from "../db/database";
 import * as passwordFunctions from '../libs/password';
 import { genBalanceAccount } from '../libs/genBalanceAccount';
 

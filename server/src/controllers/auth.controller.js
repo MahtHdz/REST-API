@@ -1,9 +1,12 @@
+import jwt from 'jsonwebtoken';
+
 import { genBalanceAccount } from '../libs/genBalanceAccount';
 import * as passwordFunctions from '../libs/password';
-
+import BankAccount from '../models/BankAccount';
+import User from '../models/User'
 import config from '../config';
-import pool from "../database";
-import jwt from 'jsonwebtoken';
+import conn from "../db/database";
+import Sequelize from 'sequelize';
 
 export const signin = async (req, res) => {
     const userFound = await pool.query('SELECT * FROM public.user WHERE email = $1', [req.body.email]);
@@ -24,7 +27,46 @@ export const signin = async (req, res) => {
 
 export const signup = async (req, res) => {
     const {email, password, bankAccount, role} = req.body;
-    
+    try {
+/*
+        const newBankAccount = await BankAccount.update({
+            account_number: bankAccount,
+            balance: genBalanceAccount()
+        },{
+            fields:['account_number', 'balance']
+        });
+        if (newBankAccount) return res.status(200).json({
+            message: 'Bank account added successfully',
+            data: newUser
+        });
+ */
+        const roleQuery = role ?
+            await Sequelize.literal('SELECT name FROM public.role WHERE name = $1', [role]) :
+            await Sequelize.literal("SELECT name FROM public.role WHERE name = 'holder'");
+        const assignedRole = roleQuery ?
+            Sequelize.literal("SELECT name FROM public.role WHERE name = 'holder'") :
+            {}
+        
+        const newUser = await User.update({
+            email,
+            password,
+            bank_account: bankAccount, 
+            role: 'holder'
+        },{
+            fields:['email', 'password', 'bank_account', 'role']
+        });
+        if (newUser) return res.status(200).json({
+            message: 'User created successfully',
+            data: newUser
+        });
+    } catch (error) {
+        console.log(error);
+        res.json({
+            message: 'Something goes wrong',
+            data: {}
+        });
+    }
+    /*
     const roleQuery = role ?
         await pool.query('SELECT name FROM public.role WHERE name = $1', [role]) :
         await pool.query("SELECT name FROM public.role WHERE name = 'holder'");
@@ -42,4 +84,5 @@ export const signup = async (req, res) => {
         expiresIn: 86400    //24 HOURS
     });
     res.status(200).json({token});
+    */
 }

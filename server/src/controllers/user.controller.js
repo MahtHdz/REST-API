@@ -1,4 +1,4 @@
-import pool from "../database";
+import pool from "../db/database";
 
 export const getUsers = async (req, res) => {
     const response = await pool.query('SELECT * FROM public.user');

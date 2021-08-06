@@ -1,4 +1,4 @@
-import pool from "../database";
+import pool from "../db/database";
 
 export const showHoldersTransactions = async (req, res) => {
 
